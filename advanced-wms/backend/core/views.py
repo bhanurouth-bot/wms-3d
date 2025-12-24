@@ -1,11 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Warehouse, Rack, Item, Conveyor, MovementJob
+from .models import Road, Warehouse, Rack, Item, Conveyor, MovementJob, Order, OrderItem, Zone
 from .serializers import (
+    RoadSerializer,
     WarehouseSerializer, 
     RackSerializer, 
     ItemSerializer, 
     ConveyorSerializer, 
-    MovementJobSerializer
+    MovementJobSerializer,
+    OrderSerializer,
+    ZoneSerializer
 )
 
 class WarehouseViewSet(ModelViewSet):
@@ -27,3 +30,15 @@ class ConveyorViewSet(ModelViewSet):
 class MovementJobViewSet(ModelViewSet):
     queryset = MovementJob.objects.all()
     serializer_class = MovementJobSerializer
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+class RoadViewSet(ModelViewSet):
+    queryset = Road.objects.all()
+    serializer_class = RoadSerializer
+
+class ZoneViewSet(ModelViewSet):
+    queryset = Zone.objects.all()
+    serializer_class = ZoneSerializer

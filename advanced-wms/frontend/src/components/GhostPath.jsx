@@ -1,27 +1,26 @@
-// frontend/src/components/GhostPath.jsx
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 
-const GhostPath = ({ points }) => {
-  // Convert simple arrays [x, y, z] into Vector3 objects for Three.js
+const GhostPath = ({ points, color = "cyan" }) => {
   const path = useMemo(() => {
     if (!points || points.length < 2) return null;
-    return points.map(p => new THREE.Vector3(p[0], 0.1, p[2])); // 0.1 Y to hover slightly above floor
+    // Elevate slightly (0.2) so it doesn't clip through the floor
+    return points.map(p => new THREE.Vector3(p[0], 0.2, p[2])); 
   }, [points]);
 
   if (!path) return null;
 
   return (
     <Line
-      points={path}       // Array of Vector3
-      color="cyan"        // High contrast color
-      lineWidth={3}       // Thick line
-      dashed={true}       // Make it look "ghostly"
-      dashScale={2}       // Dash size
-      dashSize={1}        // Dash length
-      gapSize={0.5}       // Gap length
-      opacity={0.8}
+      points={path}
+      color={color}
+      lineWidth={4} // Thicker line for visibility
+      dashed={true}
+      dashScale={1}
+      dashSize={0.5}
+      gapSize={0.2}
+      opacity={1}
       transparent
     />
   );

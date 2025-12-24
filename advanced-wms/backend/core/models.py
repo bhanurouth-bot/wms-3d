@@ -87,3 +87,56 @@ class MovementJob(models.Model):
     status = models.CharField(max_length=20, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
 
+class Order(models.Model):
+    customer_name = models.CharField(max_length=100)
+    order_number = models.CharField(max_length=20, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='PENDING') # PENDING, WAVED, SHIPPED
+    
+    def __str__(self):
+        return self.order_number
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    sku = models.CharField(max_length=50) # Which product do they want?
+    quantity = models.IntegerField(default=1)
+    
+    # After allocation, we link to the specific physical item
+    allocated_item = models.ForeignKey(Item, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.order.order_number} - {self.sku}"
+
+class Wave(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='PLANNED')
+    orders = models.ManyToManyField(Order, related_name='wave') # One wave has many orders
+
+    def __str__(self):
+        return f"Wave #{self.id}"
+
+class Road(models.Model):
+    """ Represents a walkable path segment or aisle floor """
+    warehouse = models.ForeignKey('Warehouse', related_name='roads', on_delete=models.CASCADE)
+    pos_x = models.FloatField()
+    pos_z = models.FloatField()
+    width = models.FloatField(default=2.0)
+    depth = models.FloatField(default=2.0)
+    rotation = models.FloatField(default=0.0)
+    
+    def __str__(self):
+        return f"Road ({self.pos_x}, {self.pos_z})"
+
+class Zone(models.Model):
+    """ Represents a logical area (e.g., 'Packing Area', 'Cold Storage') """
+    warehouse = models.ForeignKey('Warehouse', related_name='zones', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=20, default="#007bff") # Hex code
+    
+    pos_x = models.FloatField()
+    pos_z = models.FloatField()
+    width = models.FloatField(default=10.0)
+    depth = models.FloatField(default=10.0)
+    
+    def __str__(self):
+        return self.name
